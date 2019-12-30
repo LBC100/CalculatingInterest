@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+  <title>复利模拟</title>
+  <style>
+    td, th {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h3>复利模拟</h3>
+  <div>
+    <span>初始资金:</span> <input name='amount' type="number"/> &nbsp;
+    <span>预计投资年限:</span> <input name='years' type="number"/> &nbsp;
+    <span>预计平均年化收益:</span> <input name='annualIncome' type="number"/>% &nbsp;
+    <span>预设每年资金使用百分比:</span> <input name='availableFunds' type="number"/>% &nbsp;
+  </div>
+  <br />
+
+  <div id="container">
+
+  </div>
+
+  <div><button id='calculationBtn'>计算</button></div>
+</body>
+<script>
+  
+  const calculationBtn = $('#calculationBtn'); // 计算
+
+  const calculationFn = ({amountValue, yearsValue, annualIncomeValue, availableFunds}) => {
+    // 初始化
+    const initFN = (newAmoValue, aValue, annualIncomeValue, availableFunds) => {
+      const incValue = newAmoValue * (annualIncomeValue/100)
+      const totValue = incValue + newAmoValue
+      const curValue = totValue * (availableFunds / 100)
+      
+      return {
+        initialFunding: newAmoValue.toFixed(2),
+        totalAmount: totValue.toFixed(2),
+        income: incValue.toFixed(2),
+        growthRate: ((totValue - aValue) / aValue * 100).toFixed(3),
+        currentAmount: curValue.toFixed(2),
+        nextAmount: (totValue - curValue)
+      }
+    }
+    // let arr = initFN(amountValue, annualIncomeValue, availableFunds)
+    let arr = []
+    
+    for (let i = 0; i < yearsValue; i++) {
+      let newAmoValue = 0
+      if(i == 0) {
+        newAmoValue = amountValue
+      }else {
+        newAmoValue = arr[arr.length - 1].nextAmount
+      }
+      
+      obj = initFN(newAmoValue, amountValue, annualIncomeValue, availableFunds)
+      arr.push(obj)
+    }
+    console.log(2, arr)
+    return arr
+  }
+
+  calculationBtn.click(()=>{
+    const amountValue = +($("input[ name='amount' ]").val())
+    const yearsValue = +($("input[ name='years' ]").val())
+    const annualIncomeValue = +($("input[ name='annualIncome' ]").val())
+    const availableFunds = +($("input[ name='availableFunds' ]").val())
+    
+    // const amountValue = 50000
+    // const yearsValue = 10
+    // const annualIncomeValue = 5
+    // const availableFunds = 1
+    
+    const htmlArr = calculationFn({amountValue, yearsValue, annualIncomeValue, availableFunds})
+    
+    
+    let trHtml = ''
+    for (let i = 0; i < htmlArr.length; i++) {
+      const e = htmlArr[i];
+      trHtml += `
+          <tr style="text-align: center;">
+            <td>${i +1}</td>
+            <td>${e.initialFunding}</td>
+            <td>${e.totalAmount}</td>
+            <td>${e.income}</td>
+            <td>${e.growthRate}%</td>
+            <td>${e.currentAmount}</td>
+            <td>${(+e.nextAmount).toFixed(2)}</td>
+          </tr>
+      `
+    }
+
+    let html = `
+      <table border="0" cellspacing="1" cellpadding="0">
+        <tr>
+          <th>年</th>
+          <th>初始资金</th>
+          <th>总金额</th>
+          <th>年收益</th>
+          <th>相对于初始资金增长</th>
+          <th>今年使用资金</th>
+          <th>剩余</th>
+        </tr>
+        ${trHtml}
+      </table>
+    `
+    const container = $("#container")
+    container.empty();
+    container.append(html);
+
+    console.log(htmlArr, 5)
+  })
+</script>
+</html>
