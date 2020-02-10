@@ -9,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="css/htmleaf-demo.css">
 	<link rel='stylesheet' href='css/jquery.cardtabs.css'>
 	<link rel='stylesheet' href='css/demo.css'>
-  <title>简单复利模拟</title>
+  <title>简单计算工具</title>
   <style>
     td, th {
       padding: 10px;
@@ -20,6 +20,36 @@
   <h3>简单计算工具</h3>
   <div class='example'>
     <div class='tabsholder3'>
+
+        <div data-tab="贷款利息计算">
+          借款时间: 10月. 借款金额10000. 还款: 15000. 砍头息: 1000. 是否分期还款: 否
+          <div>
+            <div><span>借款时间:</span> <input name='borrowingTime' type="number"/>月 &nbsp;</div>
+            <div><span>借款月份:</span> <input name='startMonth' type="number"/>月 &nbsp;</div>
+            <div><span>借款金额:</span> <input name='loanAmount' type="number"/>元 &nbsp;</div>
+            <div><span>总还款(连本带利):</span> <input name='totalRepayment' type="number"/>元 &nbsp;</div>
+            <div><span>砍头息:</span> <input name='deduction' type="number"/>元 &nbsp;</div>
+            <div><span>分期还款:</span> <input type="checkbox" name="installmentRepayment" id="installmentRepayment" /> &nbsp;</div>
+            <div id="inputPeriod">
+              <!-- <div>1. <input name='period' type="number"/></div>
+              <div>2. <input name='period' type="number"/></div> -->
+            </div>
+            <div><button id="calculateInterestRates">计算年率</button></div>
+          </div>
+          <hr />
+          资金使用率: ((借款金额额-砍头息)*借款时间) / (借款金额*借款时间). <br />
+          <div id="container1"></div>
+          <hr />
+          实际使用资金: 借款金额 * 使用金率. <br />
+          <div id="container2"></div>
+          <hr />
+          利率: (真实利息 / 实际使用资金) * 100 <br />
+          <div id="container3"></div>
+          <hr />
+          年利率: 利率 * (12/借款时间) <br />
+          <div id="container4"></div>
+        </div>
+
         <div data-tab="简单复利模拟">
           <div>
             <div><span>初始资金:</span> <input name='amount' type="number"/> &nbsp;</div>
@@ -33,9 +63,6 @@
       
           <div><button id='calculationBtn'>计算</button></div>
         </div>
-        <div data-tab="贷款利息计算">
-          贷款利息计算
-        </div>
     </div>
   </div>
   
@@ -47,6 +74,135 @@
 </script>
 
 <script>
+  // 初始化
+
+  // 初始化结束
+
+  // 获取贷款利息计算各数据
+    const getLoanInfo = () => {
+      const borrowingTimeValue = +($("input[ name='borrowingTime' ]").val())
+      const startMonthValue = +($("input[ name='startMonth' ]").val())
+      const loanAmountValue = +($("input[ name='loanAmount' ]").val())
+      const totalRepaymentValue = +($("input[ name='totalRepayment' ]").val())
+      const deductionValue = +($("input[ name='deduction' ]").val())
+      
+      return {
+        borrowingTimeValue, startMonthValue, loanAmountValue, totalRepaymentValue, deductionValue,
+        actualLoan: loanAmountValue - deductionValue
+      }
+    }
+  // 获取贷款利息计算各数据结束
+
+  // 点击分期
+    const installmentRepayment = $('#installmentRepayment'); // 计算
+    // 生成期数
+      const buildCycle = (bool) => {
+        const inputPeriod = $('#inputPeriod');
+        let loanInfo = getLoanInfo()
+        console.log(loanInfo,1)
+        if(bool) {
+          let time = loanInfo.borrowingTimeValue
+          let startMonthValue = loanInfo.startMonthValue
+          
+          let html =''
+          for (let i = 0; i < time; i++) {
+            let str = `<div>${i+startMonthValue+1}月还款金额<input name='period' type="number"/></div>`
+            html += str
+          }
+          
+          inputPeriod.append(html);
+        }else {
+          inputPeriod.empty();
+        }
+      }
+    // 生成期数结束
+
+    installmentRepayment.click(() => {
+      let c = $('#installmentRepayment')[0].checked
+      
+      buildCycle(c)
+    })
+  // 点击分期结束
+
+  // 点击计算利息
+    
+    const calculateInterestRates = $('#calculateInterestRates');
+    const container1 = $('#container1');
+    const container2 = $('#container2');
+    const container3 = $('#container3');
+    const container4 = $('#container4');
+
+    calculateInterestRates.click(()=>{
+      const c = $('#installmentRepayment')[0].checked
+      let loanInfo = getLoanInfo()
+      // borrowingTimeValue, startMonthValue, loanAmountValue, totalRepaymentValue, deductionValue, actualLoan
+
+      let syjl = 0; // 使用金率
+      let sjjkje = 0; // 实际借款金额
+      let lv = 0; // 利率
+      let nlv = 0; // 年利率
+
+      console.log(c, 6)
+      if(c) { // 分期
+        let numArr = []; // 定义一个空数组
+        let values = $("input[ name='period' ]"); // 获取所有金额
+        for (var i = 0; i < values.length; i++) {
+          let v = values.eq(i).val()
+          numArr.push(+v); // 将文本框的值添加到数组中
+        }
+
+        let arr = numArr
+
+        let ktx = (loanInfo.loanAmountValue - loanInfo.deductionValue);
+        let previous = 0; // 上一次
+        let present = ktx; // 当前剩余可用资金
+        let totalArr = [ktx];
+        let sum = ktx
+        let totalStr = `${loanInfo.startMonthValue}月使用资金: ${ktx}元, <br />`
+
+        for (let i = 0; i < arr.length - 1; i++) {
+          const element = arr[i];
+          let v = totalArr[totalArr.length - 1] - element
+          totalArr.push(v)
+
+          sum+=v
+
+          totalStr+=`${i + 1 + loanInfo.startMonthValue}月使用资金: ${v}元, <br />`
+        }
+        
+
+        syjl = sum / (loanInfo.loanAmountValue * loanInfo.borrowingTimeValue);
+        sjjkje = (loanInfo.loanAmountValue) * syjl;
+        lv = (loanInfo.totalRepaymentValue - sjjkje) / sjjkje * 100;
+        nlv = lv * (12/loanInfo.borrowingTimeValue);
+        
+        totalStr = totalStr + `共使用: ${sum}. <br />`
+        let syjlStr = `${sum} / (${loanInfo.loanAmountValue} * ${loanInfo.borrowingTimeValue}) = ${syjl}`;
+
+        container1.append(totalStr + syjlStr);
+        container2.append(`${loanInfo.loanAmountValue} * ${syjl} = ${sjjkje}`);
+        container3.append(`(${loanInfo.totalRepaymentValue} - ${sjjkje}) / ${sjjkje} * 100 = ${lv}`);
+        container4.append(`${lv} * (12 / ${loanInfo.borrowingTimeValue}) = ${nlv}`);
+        console.log(numArr, totalArr, sum, 'q5')
+      }else { // 不分期
+        syjl = ((loanInfo.loanAmountValue - loanInfo.deductionValue)*loanInfo.borrowingTimeValue) / (loanInfo.loanAmountValue*loanInfo.borrowingTimeValue);
+        sjjkje = (loanInfo.loanAmountValue) * syjl;
+        lv = (loanInfo.totalRepaymentValue - sjjkje) / sjjkje * 100;
+        nlv = lv * (12/loanInfo.borrowingTimeValue);
+
+        container1.append(`
+          ((${loanInfo.loanAmountValue} - ${loanInfo.deductionValue}) * ${loanInfo.borrowingTimeValue}) / (${loanInfo.loanAmountValue} * ${loanInfo.borrowingTimeValue}) = ${syjl}
+        `);
+        container2.append(`${loanInfo.loanAmountValue} * ${syjl} = ${sjjkje}`);
+        container3.append(`(${loanInfo.totalRepaymentValue} - ${sjjkje}) / ${sjjkje} * 100 = ${lv}`);
+        container4.append(`${lv} * (12 / ${loanInfo.borrowingTimeValue}) = ${nlv}`);
+      }
+      console.log('q6', loanInfo, syjl, sjjkje, lv, nlv, loanInfo.totalRepaymentValue, sjjkje)
+      
+      
+    })
+  // 点击计算利息结束
+
   // 复利模拟开始
     const calculationBtn = $('#calculationBtn'); // 计算
 
@@ -133,7 +289,7 @@
       containerTab1.append(html);
     })
   // 复利模拟开始结束
-  
+
 </script>
 
 </html>
