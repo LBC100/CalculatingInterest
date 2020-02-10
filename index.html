@@ -180,9 +180,9 @@
         let syjlStr = `${sum} / (${loanInfo.loanAmountValue} * ${loanInfo.borrowingTimeValue}) = ${syjl}`;
 
         container1.append(totalStr + syjlStr);
-        container2.append(`${loanInfo.loanAmountValue} * ${syjl} = ${sjjkje}`);
-        container3.append(`(${loanInfo.totalRepaymentValue} - ${sjjkje}) / ${sjjkje} * 100 = ${lv}`);
-        container4.append(`${lv} * (12 / ${loanInfo.borrowingTimeValue}) = ${nlv}`);
+        container2.append(`${loanInfo.loanAmountValue} * ${syjl} = ${sjjkje}元`);
+        container3.append(`(${loanInfo.totalRepaymentValue} - ${sjjkje}) / ${sjjkje} * 100 = ${lv}%`);
+        container4.append(`${lv} * (12 / ${loanInfo.borrowingTimeValue}) = ${nlv}%`);
         console.log(numArr, totalArr, sum, 'q5')
       }else { // 不分期
         syjl = ((loanInfo.loanAmountValue - loanInfo.deductionValue)*loanInfo.borrowingTimeValue) / (loanInfo.loanAmountValue*loanInfo.borrowingTimeValue);
@@ -193,9 +193,9 @@
         container1.append(`
           ((${loanInfo.loanAmountValue} - ${loanInfo.deductionValue}) * ${loanInfo.borrowingTimeValue}) / (${loanInfo.loanAmountValue} * ${loanInfo.borrowingTimeValue}) = ${syjl}
         `);
-        container2.append(`${loanInfo.loanAmountValue} * ${syjl} = ${sjjkje}`);
-        container3.append(`(${loanInfo.totalRepaymentValue} - ${sjjkje}) / ${sjjkje} * 100 = ${lv}`);
-        container4.append(`${lv} * (12 / ${loanInfo.borrowingTimeValue}) = ${nlv}`);
+        container2.append(`${loanInfo.loanAmountValue} * ${syjl} = ${sjjkje}元`);
+        container3.append(`(${loanInfo.totalRepaymentValue} - ${sjjkje}) / ${sjjkje} * 100 = ${lv}%`);
+        container4.append(`${lv} * (12 / ${loanInfo.borrowingTimeValue}) = ${nlv}%`);
       }
       console.log('q6', loanInfo, syjl, sjjkje, lv, nlv, loanInfo.totalRepaymentValue, sjjkje)
       
