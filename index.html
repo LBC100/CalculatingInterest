@@ -105,7 +105,11 @@
           
           let html =''
           for (let i = 0; i < time; i++) {
-            let str = `<div>${i+startMonthValue+1}月还款金额<input name='period' type="number"/></div>`
+            let m = i+startMonthValue+1
+            if(m != 12) {
+              m = (i+startMonthValue+1) % 12
+            }
+            let str = `<div>${m}月还款金额<input name='period' type="number"/></div>`
             html += str
           }
           
@@ -131,7 +135,15 @@
     const container3 = $('#container3');
     const container4 = $('#container4');
 
+    const emptyHtml = () => {
+      container1.empty();
+      container2.empty();
+      container3.empty();
+      container4.empty();
+    };
+
     calculateInterestRates.click(()=>{
+      emptyHtml();
       const c = $('#installmentRepayment')[0].checked
       let loanInfo = getLoanInfo()
       // borrowingTimeValue, startMonthValue, loanAmountValue, totalRepaymentValue, deductionValue, actualLoan
@@ -166,7 +178,11 @@
 
           sum+=v
 
-          totalStr+=`${i + 1 + loanInfo.startMonthValue}月使用资金: ${v}元, <br />`
+          let m = i + 1 + loanInfo.startMonthValue
+          if(m != 12) {
+            m = (i + 1 + loanInfo.startMonthValue) % 12
+          }
+          totalStr+=`${m}月使用资金: ${v}元, <br />`
         }
         
 
