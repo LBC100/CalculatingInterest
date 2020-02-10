@@ -20,15 +20,15 @@
   <h3>简单计算工具</h3>
   <div class='example'>
     <div class='tabsholder3'>
-
+        仅供参考
         <div data-tab="贷款利息计算">
           <div>
-            <div><span>借款时间:</span> <input name='borrowingTime' type="number"/>月 &nbsp;</div>
-            <div><span>借款月份:</span> <input name='startMonth' type="number"/>月 &nbsp;</div>
             <div><span>借款金额:</span> <input name='loanAmount' type="number"/>元 &nbsp;</div>
+            <div><span>借款时间:</span> <input name='borrowingTime' type="number"/>月 &nbsp;</div>
             <div><span>总还款(连本带利):</span> <input name='totalRepayment' type="number"/>元 &nbsp;</div>
             <div><span>砍头息:</span> <input name='deduction' type="number"/>元 &nbsp;</div>
-            <div><span>分期还款:</span> <input type="checkbox" name="installmentRepayment" id="installmentRepayment" /> &nbsp;</div>
+            <div><span>分期还款(暂不支持分期还款):</span> <input type="checkbox" disabled="false" name="installmentRepayment" id="installmentRepayment" /> &nbsp;</div>
+            <div><span>借款月份:</span> <input name='startMonth' type="number"/>月 &nbsp;</div>
             <div id="inputPeriod">
               <!-- <div>1. <input name='period' type="number"/></div>
               <div>2. <input name='period' type="number"/></div> -->
@@ -47,6 +47,8 @@
           <hr />
           年利率: 利率 * (12/借款时间) <br />
           <div id="container4"></div>
+          <!-- <hr /> -->
+          
         </div>
 
         <div data-tab="简单复利模拟">
